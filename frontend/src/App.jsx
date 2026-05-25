@@ -6,6 +6,7 @@ import Dashboard from './admin/pages/Dashboard'
 import AddBlog from './admin/pages/AddBlog'
 import AllBlog from './admin/pages/AllBlog'
 import PageNotFound from './web/pages/PageNotFound'
+import toast, { Toaster } from 'react-hot-toast';
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
 
         <Route path='*' element={<PageNotFound/>}/>
       </Routes>
+      <Toaster />
     </>
   )
 }

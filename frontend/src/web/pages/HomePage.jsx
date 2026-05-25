@@ -1,45 +1,28 @@
 // src/pages/HomePage.jsx
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { FaArrowRight } from "react-icons/fa";
-
-const blogs = [
-    {
-        id: 1,
-        title: "How To Start Learning React In 2026",
-        image:
-            "https://images.unsplash.com/photo-1633356122544-f134324a6cee",
-        desc: "Complete beginner roadmap to become a React developer.",
-    },
-
-    {
-        id: 2,
-        title: "Top 10 Tailwind CSS Tips",
-        image:
-            "https://images.unsplash.com/photo-1516321318423-f06f85e504b3",
-        desc: "Useful Tailwind tricks for building modern UI faster.",
-    },
-
-    {
-        id: 3,
-        title: "MongoDB vs SQL Explained",
-        image:
-            "https://images.unsplash.com/photo-1555949963-aa79dcee981c",
-        desc: "Understand databases in the simplest possible way.",
-    },
-
-    {
-        id: 4,
-        title: "Build Modern UI With React",
-        image:
-            "https://images.unsplash.com/photo-1498050108023-c5249f4df085",
-        desc: "Learn how to create beautiful frontend applications.",
-    },
-];
+import { getAllBlog } from "../../service/blog";
 
 const HomePage = () => {
+
+    const [blogs, setBlogs] = useState([]);
+
+    let fetchBlog = async()=>{
+        try {
+            let res = await getAllBlog();
+            setBlogs(res.data.allBlogs)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    useEffect(()=>{
+        fetchBlog()
+    },[])
+
     return (
         <div className="bg-black min-h-screen">
 
@@ -81,7 +64,7 @@ const HomePage = () => {
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                     {blogs.map((blog) => (
                         <div
-                            key={blog.id}
+                            key={blog._id}
                             className="bg-zinc-900 border border-zinc-800 rounded-3xl overflow-hidden hover:-translate-y-2 transition duration-300"
                         >
 
@@ -97,7 +80,7 @@ const HomePage = () => {
                                 </h3>
 
                                 <p className="text-zinc-400 mt-3 leading-7">
-                                    {blog.desc}
+                                    {blog.shortDescription}
                                 </p>
 
                                 <button className="mt-5 text-yellow-400 hover:text-yellow-300 transition inline-flex items-center gap-2">

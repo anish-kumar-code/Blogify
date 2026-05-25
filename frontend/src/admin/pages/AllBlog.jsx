@@ -1,158 +1,33 @@
-// src/admin/pages/AllBlog.jsx
-
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Layout from "../components/Layout";
-import { Table, Button, Tag } from "antd";
 import {
     FaEdit,
     FaTrash,
     FaEye,
+    FaPlus,
 } from "react-icons/fa";
+
 import { useNavigate } from "react-router";
-
-const blogData = [
-    {
-        key: "1",
-        image:
-            "https://images.unsplash.com/photo-1498050108023-c5249f4df085",
-        title: "Learn React In 2026",
-        category: "React",
-        author: "Admin",
-        date: "25 May 2026",
-        tags: ["React", "Frontend"],
-    },
-
-    {
-        key: "2",
-        image:
-            "https://images.unsplash.com/photo-1555949963-aa79dcee981c",
-        title: "MongoDB Complete Guide",
-        category: "MongoDB",
-        author: "Anish",
-        date: "20 May 2026",
-        tags: ["Database", "MongoDB"],
-    },
-
-    {
-        key: "3",
-        image:
-            "https://images.unsplash.com/photo-1516321318423-f06f85e504b3",
-        title: "Tailwind CSS Mastery",
-        category: "Tailwind",
-        author: "Admin",
-        date: "18 May 2026",
-        tags: ["CSS", "Tailwind"],
-    },
-
-    {
-        key: "4",
-        image:
-            "https://images.unsplash.com/photo-1515879218367-8466d910aaa4",
-        title: "JavaScript Advanced Concepts",
-        category: "JavaScript",
-        author: "John",
-        date: "15 May 2026",
-        tags: ["JS", "Programming"],
-    },
-];
+import { getAllBlog } from "../../service/blog";
 
 const AllBlog = () => {
+    const [blog, setBlog] = useState([]);
+    const navigate = useNavigate();
 
-    const navigate = useNavigate()
+    const fetchBlog = async () => {
+        try {
+            const res = await getAllBlog();
+            console.log(res);
 
-    const columns = [
-        {
-            title: "Image",
-            dataIndex: "image",
-            render: (image) => (
-                <img
-                    src={image}
-                    alt="blog"
-                    className="w-[90px] h-[60px] object-cover rounded-xl border border-zinc-700"
-                />
-            ),
-        },
+            setBlog(res.data.allBlogs);
+        } catch (error) {
+            console.log(error);
+        }
+    };
 
-        {
-            title: "Title",
-            dataIndex: "title",
-            render: (title) => (
-                <span className="text-white font-semibold">
-                    {title}
-                </span>
-            ),
-        },
-
-        {
-            title: "Category",
-            dataIndex: "category",
-            render: (category) => (
-                <Tag color="gold">
-                    {category}
-                </Tag>
-            ),
-        },
-
-        {
-            title: "Author",
-            dataIndex: "author",
-            render: (author) => (
-                <span className="text-zinc-300">
-                    {author}
-                </span>
-            ),
-        },
-
-        {
-            title: "Date",
-            dataIndex: "date",
-            render: (date) => (
-                <span className="text-zinc-400">
-                    {date}
-                </span>
-            ),
-        },
-
-        {
-            title: "Tags",
-            dataIndex: "tags",
-            render: (tags) => (
-                <div className="flex flex-wrap gap-2">
-                    {tags.map((tag, index) => (
-                        <Tag
-                            key={index}
-                            color="processing"
-                        >
-                            {tag}
-                        </Tag>
-                    ))}
-                </div>
-            ),
-        },
-
-        {
-            title: "Actions",
-            render: () => (
-                <div className="flex items-center gap-3">
-
-                    {/* View */}
-                    <button className="w-10 h-10 rounded-xl bg-zinc-800 hover:bg-yellow-400 hover:text-black text-white transition flex items-center justify-center">
-                        <FaEye />
-                    </button>
-
-                    {/* Edit */}
-                    <button className="w-10 h-10 rounded-xl bg-zinc-800 hover:bg-blue-500 hover:text-white text-white transition flex items-center justify-center">
-                        <FaEdit />
-                    </button>
-
-                    {/* Delete */}
-                    <button className="w-10 h-10 rounded-xl bg-zinc-800 hover:bg-red-500 hover:text-white text-white transition flex items-center justify-center">
-                        <FaTrash />
-                    </button>
-                </div>
-            ),
-        },
-    ];
+    useEffect(() => {
+        fetchBlog();
+    }, []);
 
     return (
         <Layout>
@@ -171,26 +46,151 @@ const AllBlog = () => {
                         </p>
                     </div>
 
-                    <Button
-                        size="large"
-                        className="!bg-yellow-400 hover:!bg-yellow-300 !text-black !border-none !font-semibold !px-6"
-                        onClick={()=> navigate('/admin/add-blog')}
+                    {/* Add Blog Button */}
+                    <button
+                        onClick={() => navigate("/admin/add-blog")}
+                        className="bg-yellow-400 hover:bg-yellow-300 text-black px-6 py-3 rounded-2xl font-semibold flex items-center gap-2 transition"
                     >
-                        Add New Blog
-                    </Button>
+                        <FaPlus />
+                        Add Blog
+                    </button>
                 </div>
 
-                {/* Table Container */}
-                <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-5 overflow-x-auto">
+                {/* Blog Table */}
+                <div className="bg-zinc-900 border border-zinc-800 rounded-3xl overflow-hidden">
 
-                    <Table
-                        columns={columns}
-                        dataSource={blogData}
-                        pagination={{
-                            pageSize: 5,
-                        }}
-                        className="custom-table"
-                    />
+                    <div className="overflow-x-auto">
+
+                        <table className="w-full">
+
+                            {/* Table Head */}
+                            <thead className="bg-zinc-800">
+                                <tr>
+
+                                    <th className="text-left text-white px-5 py-4">
+                                        Image
+                                    </th>
+
+                                    <th className="text-left text-white px-5 py-4">
+                                        Title
+                                    </th>
+
+                                    <th className="text-left text-white px-5 py-4">
+                                        Category
+                                    </th>
+
+                                    <th className="text-left text-white px-5 py-4">
+                                        Author
+                                    </th>
+
+                                    <th className="text-left text-white px-5 py-4">
+                                        Date
+                                    </th>
+
+                                    <th className="text-left text-white px-5 py-4">
+                                        Tags
+                                    </th>
+
+                                    <th className="text-left text-white px-5 py-4">
+                                        Actions
+                                    </th>
+                                </tr>
+                            </thead>
+
+                            {/* Table Body */}
+                            <tbody>
+                                {blog?.map((item) => (
+                                    <tr
+                                        key={item._id}
+                                        className="border-t border-zinc-800 hover:bg-zinc-800/40 transition"
+                                    >
+
+                                        {/* Image */}
+                                        <td className="px-5 py-4">
+                                            <img
+                                                src={item.image}
+                                                alt={item.title}
+                                                className="w-[90px] h-[60px] rounded-xl object-cover"
+                                            />
+                                        </td>
+
+                                        {/* Title */}
+                                        <td className="px-5 py-4">
+                                            <h3 className="text-white font-semibold">
+                                                {item.title}
+                                            </h3>
+                                        </td>
+
+                                        {/* Category */}
+                                        <td className="px-5 py-4">
+                                            <span className="bg-yellow-400 text-black text-sm px-3 py-1 rounded-full font-medium">
+                                                {item.category}
+                                            </span>
+                                        </td>
+
+                                        {/* Author */}
+                                        <td className="px-5 py-4 text-zinc-300">
+                                            {item.author}
+                                        </td>
+
+                                        {/* Date */}
+                                        <td className="px-5 py-4 text-zinc-400">
+                                            {new Date(item.date).toLocaleDateString()}
+                                        </td>
+
+                                        {/* Tags */}
+                                        <td className="px-5 py-4">
+                                            <div className="flex flex-wrap gap-2">
+                                                {item.tags?.map((tag, index) => (
+                                                    <span
+                                                        key={index}
+                                                        className="bg-zinc-800 text-zinc-300 text-xs px-3 py-1 rounded-full"
+                                                    >
+                                                        {tag}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        </td>
+
+                                        {/* Actions */}
+                                        <td className="px-5 py-4">
+
+                                            <div className="flex items-center gap-3">
+
+                                                {/* View */}
+                                                <button className="w-10 h-10 rounded-xl bg-zinc-800 hover:bg-yellow-400 hover:text-black text-white transition flex items-center justify-center">
+                                                    <FaEye />
+                                                </button>
+
+                                                {/* Edit */}
+                                                <button className="w-10 h-10 rounded-xl bg-zinc-800 hover:bg-blue-500 hover:text-white text-white transition flex items-center justify-center">
+                                                    <FaEdit />
+                                                </button>
+
+                                                {/* Delete */}
+                                                <button className="w-10 h-10 rounded-xl bg-zinc-800 hover:bg-red-500 hover:text-white text-white transition flex items-center justify-center">
+                                                    <FaTrash />
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+
+                        {/* Empty State */}
+                        {blog.length === 0 && (
+                            <div className="py-20 text-center">
+                                <h2 className="text-2xl text-zinc-400 font-semibold">
+                                    No Blogs Found
+                                </h2>
+
+                                <p className="text-zinc-500 mt-3">
+                                    Start by adding your first blog.
+                                </p>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
         </Layout>

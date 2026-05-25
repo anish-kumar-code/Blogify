@@ -2,145 +2,166 @@
 
 import React, { useState } from "react";
 import Layout from "../components/Layout";
-import {
-    Form,
-    Input,
-    Button,
-    Select,
-    DatePicker,
-} from "antd";
-
-const { TextArea } = Input;
+import { addBlog } from "../../service/blog";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router";
 
 const AddBlog = () => {
-    const [imageUrl, setImageUrl] = useState("");
 
-    const onFinish = (values) => {
-        console.log(values);
+    // States
+    const [title, setTitle] = useState("");
+    const [shortDescription, setShortDescription] = useState("");
+    const [longDescription, setLongDescription] = useState("");
+    const [image, setImage] = useState("");
+    const [date, setDate] = useState("");
+    const [author, setAuthor] = useState("");
+    const [category, setCategory] = useState("");
+    const [tags, setTags] = useState("");
+
+    const navigate = useNavigate()
+
+    // Submit Handler
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        // Prepare Data
+        const blogData = {
+            title,
+            shortDescription,
+            longDescription,
+            image,
+            date,
+            author,
+            category,
+
+            tags: tags
+                .split(",")
+                .map((tag) => tag.trim()),
+        };
+
+        // console.log(blogData);
+
+        try {
+            const res = await addBlog(blogData);
+
+            // console.log(res);
+
+            toast.success(res.data.message)
+
+            // Reset Form
+            setTitle("");
+            setShortDescription("");
+            setLongDescription("");
+            setImage("");
+            setDate("");
+            setAuthor("");
+            setCategory("");
+            setTags("");
+
+            navigate('/admin/all-blogs')
+
+        } catch (error) {
+            console.log(error);
+        }
     };
 
     return (
         <Layout>
             <div>
 
-                {/* Page Heading */}
+                {/* Heading */}
                 <div className="mb-10">
+
                     <h1 className="text-4xl font-bold text-white">
                         Add New Blog
                     </h1>
 
                     <p className="text-zinc-500 mt-3">
-                        Create and publish a new blog post.
+                        Create and publish a new blog.
                     </p>
                 </div>
 
-                {/* Form Container */}
+                {/* Form */}
                 <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-8">
 
-                    <Form
-                        layout="vertical"
-                        onFinish={onFinish}
-                        className="grid grid-cols-1 gap-6"
+                    <form
+                        onSubmit={handleSubmit}
+                        className="flex flex-col gap-6"
                     >
 
                         {/* Blog Title */}
-                        <Form.Item
-                            label={
-                                <span className="text-white font-medium">
-                                    Blog Title
-                                </span>
-                            }
-                            name="title"
-                            rules={[
-                                {
-                                    required: true,
-                                    message: "Please enter blog title",
-                                },
-                            ]}
-                        >
-                            <Input
+                        <div>
+                            <label className="text-white block mb-2 font-medium">
+                                Blog Title
+                            </label>
+
+                            <input
+                                type="text"
                                 placeholder="Enter blog title"
-                                size="large"
-                                className="custom-input"
+                                value={title}
+                                onChange={(e) =>
+                                    setTitle(e.target.value)
+                                }
+                                className="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-5 py-4 text-white outline-none focus:border-yellow-400"
                             />
-                        </Form.Item>
+                        </div>
 
                         {/* Short Description */}
-                        <Form.Item
-                            label={
-                                <span className="text-white font-medium">
-                                    Blog Short Description
-                                </span>
-                            }
-                            name="shortDescription"
-                            rules={[
-                                {
-                                    required: true,
-                                    message:
-                                        "Please enter short description",
-                                },
-                            ]}
-                        >
-                            <TextArea
-                                rows={4}
+                        <div>
+                            <label className="text-white block mb-2 font-medium">
+                                Short Description
+                            </label>
+
+                            <textarea
+                                rows="4"
                                 placeholder="Enter short description"
-                                className="custom-input"
-                            />
-                        </Form.Item>
+                                value={shortDescription}
+                                onChange={(e) =>
+                                    setShortDescription(e.target.value)
+                                }
+                                className="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-5 py-4 text-white outline-none focus:border-yellow-400 resize-none"
+                            ></textarea>
+                        </div>
 
                         {/* Long Description */}
-                        <Form.Item
-                            label={
-                                <span className="text-white font-medium">
-                                    Blog Long Description
-                                </span>
-                            }
-                            name="longDescription"
-                            rules={[
-                                {
-                                    required: true,
-                                    message:
-                                        "Please enter long description",
-                                },
-                            ]}
-                        >
-                            <TextArea
-                                rows={8}
-                                placeholder="Enter long description"
-                                className="custom-input"
-                            />
-                        </Form.Item>
+                        <div>
+                            <label className="text-white block mb-2 font-medium">
+                                Long Description
+                            </label>
 
-                        {/* Blog Image URL */}
-                        <Form.Item
-                            label={
-                                <span className="text-white font-medium">
-                                    Blog Image URL
-                                </span>
-                            }
-                            name="image"
-                            rules={[
-                                {
-                                    required: true,
-                                    message: "Please enter image URL",
-                                },
-                            ]}
-                        >
-                            <Input
-                                placeholder="Paste image URL"
-                                size="large"
-                                className="custom-input"
+                            <textarea
+                                rows="8"
+                                placeholder="Enter long description"
+                                value={longDescription}
                                 onChange={(e) =>
-                                    setImageUrl(e.target.value)
+                                    setLongDescription(e.target.value)
                                 }
+                                className="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-5 py-4 text-white outline-none focus:border-yellow-400 resize-none"
+                            ></textarea>
+                        </div>
+
+                        {/* Image URL */}
+                        <div>
+                            <label className="text-white block mb-2 font-medium">
+                                Blog Image URL
+                            </label>
+
+                            <input
+                                type="text"
+                                placeholder="Paste image URL"
+                                value={image}
+                                onChange={(e) =>
+                                    setImage(e.target.value)
+                                }
+                                className="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-5 py-4 text-white outline-none focus:border-yellow-400"
                             />
-                        </Form.Item>
+                        </div>
 
                         {/* Image Preview */}
-                        {imageUrl && (
+                        {image && (
                             <div className="w-full h-[300px] rounded-3xl overflow-hidden border border-zinc-800">
                                 <img
-                                    src={imageUrl}
+                                    src={image}
                                     alt="preview"
                                     className="w-full h-full object-cover"
                                 />
@@ -151,123 +172,109 @@ const AddBlog = () => {
                         <div className="grid md:grid-cols-2 gap-6">
 
                             {/* Date */}
-                            <Form.Item
-                                label={
-                                    <span className="text-white font-medium">
-                                        Date
-                                    </span>
-                                }
-                                name="date"
-                                rules={[
-                                    {
-                                        required: true,
-                                        message: "Please select date",
-                                    },
-                                ]}
-                            >
-                                <DatePicker
-                                    size="large"
-                                    className="w-full"
+                            <div>
+                                <label className="text-white block mb-2 font-medium">
+                                    Date
+                                </label>
+
+                                <input
+                                    type="date"
+                                    value={date}
+                                    onChange={(e) =>
+                                        setDate(e.target.value)
+                                    }
+                                    className="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-5 py-4 text-white outline-none focus:border-yellow-400"
                                 />
-                            </Form.Item>
+                            </div>
 
                             {/* Author */}
-                            <Form.Item
-                                label={
-                                    <span className="text-white font-medium">
-                                        Author
-                                    </span>
-                                }
-                                name="author"
-                                rules={[
-                                    {
-                                        required: true,
-                                        message: "Please enter author name",
-                                    },
-                                ]}
-                            >
-                                <Input
+                            <div>
+                                <label className="text-white block mb-2 font-medium">
+                                    Author
+                                </label>
+
+                                <input
+                                    type="text"
                                     placeholder="Enter author name"
-                                    size="large"
-                                    className="custom-input"
+                                    value={author}
+                                    onChange={(e) =>
+                                        setAuthor(e.target.value)
+                                    }
+                                    className="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-5 py-4 text-white outline-none focus:border-yellow-400"
                                 />
-                            </Form.Item>
+                            </div>
 
                             {/* Category */}
-                            <Form.Item
-                                label={
-                                    <span className="text-white font-medium">
-                                        Category
-                                    </span>
-                                }
-                                name="category"
-                                rules={[
-                                    {
-                                        required: true,
-                                        message: "Please select category",
-                                    },
-                                ]}
-                            >
-                                <Select
-                                    size="large"
-                                    placeholder="Select category"
-                                    options={[
-                                        {
-                                            value: "react",
-                                            label: "React",
-                                        },
-                                        {
-                                            value: "mongodb",
-                                            label: "MongoDB",
-                                        },
-                                        {
-                                            value: "javascript",
-                                            label: "JavaScript",
-                                        },
-                                        {
-                                            value: "tailwind",
-                                            label: "Tailwind CSS",
-                                        },
-                                    ]}
-                                />
-                            </Form.Item>
+                            <div>
+                                <label className="text-white block mb-2 font-medium">
+                                    Category
+                                </label>
+
+                                <select
+                                    value={category}
+                                    onChange={(e) =>
+                                        setCategory(e.target.value)
+                                    }
+                                    className="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-5 py-4 text-white outline-none focus:border-yellow-400"
+                                >
+                                    <option value="">
+                                        Select Category
+                                    </option>
+
+                                    <option value="React">
+                                        React
+                                    </option>
+
+                                    <option value="MongoDB">
+                                        MongoDB
+                                    </option>
+
+                                    <option value="JavaScript">
+                                        JavaScript
+                                    </option>
+
+                                    <option value="Tailwind CSS">
+                                        Tailwind CSS
+                                    </option>
+                                </select>
+                            </div>
 
                             {/* Tags */}
-                            <Form.Item
-                                label={
-                                    <span className="text-white font-medium">
-                                        Tags
-                                    </span>
-                                }
-                                name="tags"
-                            >
-                                <Select
-                                    mode="tags"
-                                    size="large"
-                                    placeholder="Add tags"
+                            <div>
+                                <label className="text-white block mb-2 font-medium">
+                                    Tags
+                                </label>
+
+                                <input
+                                    type="text"
+                                    placeholder="React, Frontend, JS"
+                                    value={tags}
+                                    onChange={(e) =>
+                                        setTags(e.target.value)
+                                    }
+                                    className="w-full bg-zinc-800 border border-zinc-700 rounded-2xl px-5 py-4 text-white outline-none focus:border-yellow-400"
                                 />
-                            </Form.Item>
+                            </div>
                         </div>
 
                         {/* Buttons */}
                         <div className="flex items-center gap-4 pt-4">
 
-                            <Button
-                                htmlType="submit"
-                                size="large"
-                                className="!bg-yellow-400 hover:!bg-yellow-300 !text-black !border-none !font-semibold !px-8"
+                            <button
+                                type="submit"
+                                className="bg-yellow-400 hover:bg-yellow-300 text-black px-8 py-4 rounded-2xl font-semibold transition"
                             >
                                 Publish Blog
-                            </Button>
+                            </button>
 
-                            <Button
-                                size="large"
-                                className="!bg-zinc-800 hover:!bg-zinc-700 !text-white !border-zinc-700 !px-8"
+                            <button
+                                type="button"
+                                className="bg-zinc-800 hover:bg-zinc-700 text-white px-8 py-4 rounded-2xl font-semibold transition"
                             >
                                 Reset
-                            </Button>
+                            </button>
                         </div>
-                    </Form>
+                    </form>
                 </div>
             </div>
         </Layout>

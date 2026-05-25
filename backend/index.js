@@ -1,10 +1,13 @@
 import express from 'express'
 import mongoose from 'mongoose';
+import cors from 'cors';
 import BlogModel from './models/blog.model.js';
 const app = express()
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cors())                                      // all access
+// app.use(cors({origin: "http://localhost:5173/"})) // limited access
 
 // ----- PORT -----
 const port = 3000
