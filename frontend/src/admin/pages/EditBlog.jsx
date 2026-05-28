@@ -2,11 +2,12 @@
 
 import React, { useState } from "react";
 import Layout from "../components/Layout";
-import { addBlog } from "../../service/blog";
+import { addBlog, editBlog, getSingleBlogDetails } from "../../service/blog";
 import toast from "react-hot-toast";
-import { useNavigate } from "react-router";
+import { useNavigate, useParams } from "react-router";
+import { useEffect } from "react";
 
-const AddBlog = () => {
+const EditBlog = () => {
 
     // States
     const [title, setTitle] = useState("");
@@ -19,6 +20,29 @@ const AddBlog = () => {
     const [tags, setTags] = useState("");
 
     const navigate = useNavigate()
+    const { id } = useParams()
+
+    const fetchBlogDetails = async(id) => {
+        try {
+            const res = await getSingleBlogDetails(id)
+            const details = res.data.blogDetails
+            setTitle(details.title)
+            setShortDescription(details.shortDescription)
+            setLongDescription(details.longDescription)
+            setImage(details.image)
+            setDate(details.date?.split("T")[0])
+            setAuthor(details.author)
+            setCategory(details.category)
+            setTags(details.tags.toString())
+        } catch (error) {
+            toast.error("Something went wrong.")
+            console.log(error);
+        }
+    }
+
+    useEffect(() => {
+        fetchBlogDetails(id)
+    }, [])
 
     // Submit Handler
     const handleSubmit = async (e) => {
@@ -34,25 +58,13 @@ const AddBlog = () => {
             author,
             category,
 
-            tags: tags
-                .split(",")
-                .map((tag) => tag.trim()),
+            tags: tags.split(",").map((tag) => tag.trim()),
         };
 
         try {
-            const res = await addBlog(blogData);
+            const res = await editBlog(id, blogData);
 
             toast.success(res.data.message)
-
-            // Reset Form
-            setTitle("");
-            setShortDescription("");
-            setLongDescription("");
-            setImage("");
-            setDate("");
-            setAuthor("");
-            setCategory("");
-            setTags("");
 
             navigate('/admin/all-blogs')
 
@@ -70,11 +82,11 @@ const AddBlog = () => {
                 <div className="mb-10">
 
                     <h1 className="text-4xl font-bold text-white">
-                        Add New Blog
+                        Edit Blog
                     </h1>
 
                     <p className="text-zinc-500 mt-3">
-                        Create and publish a new blog.
+                        Edit your blog
                     </p>
                 </div>
 
@@ -261,7 +273,7 @@ const AddBlog = () => {
                                 type="submit"
                                 className="bg-yellow-400 hover:bg-yellow-300 text-black px-8 py-4 rounded-2xl font-semibold transition"
                             >
-                                Publish Blog
+                                Update Blog
                             </button>
 
                             <button
@@ -278,4 +290,4 @@ const AddBlog = () => {
     );
 };
 
-export default AddBlog;
+export default EditBlog;

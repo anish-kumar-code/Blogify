@@ -9,6 +9,7 @@ import {
 
 import { useNavigate } from "react-router";
 import { getAllBlog } from "../../service/blog";
+import toast from "react-hot-toast";
 
 const AllBlog = () => {
     const [blog, setBlog] = useState([]);
@@ -17,10 +18,10 @@ const AllBlog = () => {
     const fetchBlog = async () => {
         try {
             const res = await getAllBlog();
-            console.log(res);
 
             setBlog(res.data.allBlogs);
         } catch (error) {
+            toast.error("Something went wrong.")
             console.log(error);
         }
     };
@@ -163,7 +164,7 @@ const AllBlog = () => {
                                                 </button>
 
                                                 {/* Edit */}
-                                                <button className="w-10 h-10 rounded-xl bg-zinc-800 hover:bg-blue-500 hover:text-white text-white transition flex items-center justify-center">
+                                                <button className="w-10 h-10 rounded-xl bg-zinc-800 hover:bg-blue-500 hover:text-white text-white transition flex items-center justify-center" onClick={()=> navigate(`/admin/edit-blog/${item._id}`)}>
                                                     <FaEdit />
                                                 </button>
 

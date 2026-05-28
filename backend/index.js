@@ -66,6 +66,43 @@ app.get('/allblog', async (req, res) => {
 })
 
 
+// ----- Ftech Blog via Id -----
+app.get('/getblogbyid/:id', async (req, res) => {
+    try {
+        const { id } = req.params
+        let blogDetails = await BlogModel.findOne({ _id: id })
+
+        res.status(200).json({ success: true, message: "Blog Fetched Successfully", blogDetails })
+
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ success: false, message: "Single Blog Fetch API Error", error })
+    }
+})
+
+
+// ----- ADD BLOG -----
+app.patch('/editblog/:id', async (req, res) => {
+    try {
+        let { title, shortDescription, longDescription, image, date, author, category, tags } = req.body
+
+        const { id } = req.params
+
+        let updatedBlog = await BlogModel.findOneAndUpdate({ _id: id }, { title, shortDescription, longDescription, image, date, author, category, tags }, { new: true })
+
+        if (!updatedBlog) {
+            res.status(500).json({ success: false, message: "Blog Not Updated" })
+        }
+
+        res.status(200).json({ success: true, message: "Blog Updated Successfully", updatedBlog })
+
+
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ success: false, message: "Update Blog API Error", error })
+    }
+})
+
 
 
 
